@@ -1,65 +1,485 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+
+import TodoForm from "@/components/TodoForm";
+import TodoList from "@/components/TodoList";
+import Navbar from "@/components/Navbar";
+
+import { Todo } from "@/types/todo";
+
+import {
+  getTodos,
+  createTodo,
+  updateTodo,
+  deleteTodo,
+  editTodo
+} from "@/lib/api";
+
+
 
 export default function Home() {
+
+
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
+
+
+
+
+
+  // Load Todos
+
+  useEffect(() => {
+
+
+    async function loadTodos() {
+
+      try {
+
+        const data = await getTodos();
+
+        setTodos(data);
+
+      }
+
+      catch(error){
+
+        setError(
+          "Unable to connect with backend"
+        );
+
+      }
+
+      finally {
+
+        setLoading(false);
+
+      }
+
+    }
+
+
+    loadTodos();
+
+
+  }, []);
+
+
+
+
+
+
+
+  // Add Todo
+
+  const addTodo = async (title:string) => {
+
+
+    try {
+
+
+      const newTodo = await createTodo(title);
+
+
+
+      setTodos(prev => [
+
+        ...prev,
+
+        newTodo
+
+      ]);
+
+
+    }
+
+    catch(error){
+
+      setError(
+        "Failed to create todo"
+      );
+
+    }
+
+
+  };
+
+
+
+
+
+
+
+
+  // Toggle Complete
+
+  const toggleTodo = async (id:number) => {
+
+
+    try {
+
+
+      const updatedTodo = await updateTodo(id);
+
+
+
+      setTodos(prev =>
+
+        prev.map(todo =>
+
+          todo.id === id
+
+          ?
+
+          updatedTodo
+
+          :
+
+          todo
+
+        )
+
+      );
+
+
+    }
+
+    catch(error){
+
+      setError(
+        "Failed to update todo"
+      );
+
+    }
+
+
+  };
+
+
+
+
+
+
+
+
+  // Delete Todo
+
+  const removeTodo = async (id:number) => {
+
+
+    try {
+
+
+      await deleteTodo(id);
+
+
+
+      setTodos(prev =>
+
+        prev.filter(todo =>
+
+          todo.id !== id
+
+        )
+
+      );
+
+
+    }
+
+    catch(error){
+
+      setError(
+        "Failed to delete todo"
+      );
+
+    }
+
+
+  };
+
+
+
+
+
+
+
+
+  // Edit Todo
+
+  const changeTodo = async (
+
+    id:number,
+
+    title:string
+
+  ) => {
+
+
+    try {
+
+
+      const updatedTodo = await editTodo(
+
+        id,
+
+        title
+
+      );
+
+
+
+      setTodos(prev =>
+
+        prev.map(todo =>
+
+          todo.id === id
+
+          ?
+
+          updatedTodo
+
+          :
+
+          todo
+
+        )
+
+      );
+
+
+    }
+
+    catch(error){
+
+      setError(
+        "Failed to edit todo"
+      );
+
+    }
+
+
+  };
+
+
+
+
+
+
+
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+
+    <main className="min-h-screen bg-slate-100">
+
+
+      <Navbar title="Abdullah's Workspace" />
+
+
+
+      <section className="mx-auto max-w-3xl px-6 py-12">
+
+
+
+        <div className="mb-10">
+
+
+          <h1 className="text-5xl font-extrabold tracking-tight text-slate-900">
+
+            Build. Focus. Ship.
+
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+
+
+          <p className="mt-3 text-lg text-slate-600">
+
+            Organize today's work like a developer.
+
           </p>
+
+
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+
+
+
+
+        {
+          error && (
+
+            <div className="mb-5 rounded-lg bg-red-100 p-4 text-red-700">
+
+              {error}
+
+            </div>
+
+          )
+        }
+
+
+
+
+
+
+
+        <div className="grid grid-cols-3 gap-4 mb-8">
+
+
+
+          <div className="rounded-xl bg-white shadow p-5 border">
+
+            <p className="text-sm text-slate-500">
+              Total
+            </p>
+
+
+            <h2 className="text-3xl font-bold">
+
+              {todos.length}
+
+            </h2>
+
+
+          </div>
+
+
+
+
+
+
+          <div className="rounded-xl bg-white shadow p-5 border">
+
+
+            <p className="text-sm text-slate-500">
+              Completed
+            </p>
+
+
+            <h2 className="text-3xl font-bold text-emerald-600">
+
+
+              {
+                todos.filter(
+                  todo => todo.completed
+                ).length
+              }
+
+
+            </h2>
+
+
+          </div>
+
+
+
+
+
+
+          <div className="rounded-xl bg-white shadow p-5 border">
+
+
+            <p className="text-sm text-slate-500">
+              Remaining
+            </p>
+
+
+            <h2 className="text-3xl font-bold text-blue-600">
+
+
+              {
+                todos.filter(
+                  todo => !todo.completed
+                ).length
+              }
+
+
+            </h2>
+
+
+          </div>
+
+
         </div>
-      </main>
-    </div>
+
+
+
+
+
+
+
+
+        <div className="rounded-2xl bg-white shadow-xl border p-8">
+
+
+
+          <TodoForm
+
+            addTodo={addTodo}
+
+          />
+
+
+
+
+
+          <div className="mt-8">
+
+
+            <h2 className="mb-4 text-xl font-semibold text-slate-800">
+
+              Today's Tasks
+
+            </h2>
+
+
+
+
+
+            {
+              loading
+
+              ?
+
+              <p>
+                Loading tasks...
+              </p>
+
+              :
+
+              <TodoList
+
+                todos={todos}
+
+                toggleTodo={toggleTodo}
+
+                deleteTodo={removeTodo}
+
+                editTodo={changeTodo}
+
+              />
+
+            }
+
+
+
+          </div>
+
+
+        </div>
+
+
+
+
+      </section>
+
+
+    </main>
+
   );
+
 }
