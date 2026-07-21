@@ -1,8 +1,4 @@
-import { Todo } from "@/types/todo";
-
-
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = "http://127.0.0.1:8000";
 
 
 
@@ -35,7 +31,6 @@ function authHeaders(){
     const token = getToken();
 
 
-
     return {
 
         "Content-Type":"application/json",
@@ -54,7 +49,7 @@ function authHeaders(){
 // GET TODOS
 // ==========================
 
-export async function getTodos(): Promise<Todo[]> {
+export async function getTodos(){
 
 
     const response = await fetch(
@@ -62,9 +57,7 @@ export async function getTodos(): Promise<Todo[]> {
         `${API_URL}/todos/`,
 
         {
-
             headers: authHeaders()
-
         }
 
     );
@@ -92,9 +85,7 @@ export async function getTodos(): Promise<Todo[]> {
 // ==========================
 
 export async function createTodo(
-
     title:string
-
 ){
 
 
@@ -119,7 +110,6 @@ export async function createTodo(
     );
 
 
-
     if(!response.ok){
 
         throw new Error(
@@ -138,7 +128,7 @@ export async function createTodo(
 
 
 // ==========================
-// TOGGLE TODO
+// TOGGLE TODO COMPLETE
 // ==========================
 
 export async function updateTodo(
@@ -163,7 +153,6 @@ export async function updateTodo(
     );
 
 
-
     if(!response.ok){
 
         throw new Error(
@@ -174,48 +163,6 @@ export async function updateTodo(
 
 
     return response.json();
-
-}
-
-
-
-
-
-// ==========================
-// DELETE TODO
-// ==========================
-
-export async function deleteTodo(
-
-    id:number
-
-){
-
-
-    const response = await fetch(
-
-        `${API_URL}/todos/${id}`,
-
-        {
-
-            method:"DELETE",
-
-            headers:authHeaders()
-
-        }
-
-    );
-
-
-
-    if(!response.ok){
-
-        throw new Error(
-            "Failed to delete todo"
-        );
-
-    }
-
 
 }
 
@@ -257,7 +204,6 @@ export async function editTodo(
     );
 
 
-
     if(!response.ok){
 
         throw new Error(
@@ -271,11 +217,59 @@ export async function editTodo(
 
 }
 
+
+
+
+
+// ==========================
+// DELETE TODO
+// ==========================
+
+export async function deleteTodo(
+
+    id:number
+
+){
+
+
+    const response = await fetch(
+
+        `${API_URL}/todos/${id}`,
+
+        {
+
+            method:"DELETE",
+
+            headers:authHeaders()
+
+        }
+
+    );
+
+
+    if(!response.ok){
+
+        throw new Error(
+            "Failed to delete todo"
+        );
+
+    }
+
+
+    return response.json();
+
+}
+
+
+
+
+
 // ==========================
 // GET CURRENT USER
 // ==========================
 
 export async function getCurrentUser(){
+
 
     const response = await fetch(
 
@@ -290,6 +284,7 @@ export async function getCurrentUser(){
     );
 
 
+
     if(!response.ok){
 
         throw new Error(
@@ -298,30 +293,6 @@ export async function getCurrentUser(){
 
     }
 
-
-    return response.json();
-
-}
-export async function getDashboardStats(){
-
-    const token = localStorage.getItem("token");
-
-
-    const response = await fetch(
-
-        `${API_URL}/dashboard/stats`,
-
-        {
-
-            headers:{
-
-                Authorization:`Bearer ${token}`
-
-            }
-
-        }
-
-    );
 
 
     return response.json();
