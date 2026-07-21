@@ -35,11 +35,15 @@ app = FastAPI()
 from fastapi.middleware.cors import CORSMiddleware
 
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
 app.add_middleware(
     CORSMiddleware,
 
     allow_origins=[
-        "https://nextjs-todo-three-inky.vercel.app"
+        "https://nextjs-todo-three-inky.vercel.app",
+        "http://localhost:3000"
     ],
 
     allow_credentials=True,
